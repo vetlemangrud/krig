@@ -25,7 +25,10 @@ main :: proc() {
 
 	for !rl.WindowShouldClose() {
 		for &warrior in warriors {
-			update_warrior(&warrior)
+			apply_warrior_forces(&warrior)
+		}
+		for &warrior in warriors {
+			update_warrior_position(&warrior)
 		}
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
