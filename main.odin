@@ -1,18 +1,18 @@
 package main
 import rl "vendor:raylib"
 
-screenWidth :: 800
-screenHeight :: 600
+SCREEN_WIDTH :: 800
+SCREEN_HEIGHT :: 600
 
 camera := rl.Camera2D {
-	offset   = {screenWidth / 2, screenHeight / 2},
+	offset   = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2},
 	rotation = 0,
 	target   = {0, 0},
 	zoom     = 1,
 }
 
 main :: proc() {
-	rl.InitWindow(screenWidth, screenHeight, "krig")
+	rl.InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "krig")
 	defer rl.CloseWindow()
 	rl.SetTargetFPS(60)
 	warrior := Warrior {

@@ -1,23 +1,23 @@
 package main
 
-import "vendor:raylib/rlgl"
 import rl "vendor:raylib"
+import "vendor:raylib/rlgl"
 
 Warrior :: struct {
-  pos: rl.Vector2,
-  health: i32,
-  color: rl.Color
+	pos:    rl.Vector2,
+	health: i32,
+	color:  rl.Color,
 }
 
-warriorHealth :: 100
-warriorAttack :: 10
-warriorRadius :: 10
+WARRIOR_HEALTH :: 100
+WARRIOR_ATTACK :: 10
+WARRIOR_RADIUS :: 10
 
 drawWarrior :: proc(warrior: ^Warrior) {
-  rlgl.PushMatrix()
-  defer rlgl.PopMatrix()
+	rlgl.PushMatrix()
+	defer rlgl.PopMatrix()
 
-  rlgl.Translatef(warrior.pos.x, warrior.pos.y,0)
-  rl.DrawCircle(0,0,warriorRadius,warrior.color)
-  rl.DrawCircleLines(0,0,warriorRadius,rl.BLACK)
+	rlgl.Translatef(warrior.pos.x, warrior.pos.y, 0)
+	rl.DrawCircle(0, 0, WARRIOR_RADIUS, warrior.color)
+	rl.DrawCircleLines(0, 0, WARRIOR_RADIUS, rl.BLACK)
 }
