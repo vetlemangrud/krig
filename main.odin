@@ -24,6 +24,9 @@ main :: proc() {
 	rl.SetTargetFPS(60)
 
 	for !rl.WindowShouldClose() {
+		for &warrior in warriors {
+			update_warrior(&warrior)
+		}
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
 		rl.ClearBackground(rl.GRAY)
