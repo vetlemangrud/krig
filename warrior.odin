@@ -27,7 +27,7 @@ draw_warrior :: proc(warrior: ^Warrior) {
 	rl.DrawCircle(0, 0, WARRIOR_RADIUS, warrior.color)
 }
 
-apply_warrior_acc_towards_enemy :: proc(warrior: ^Warrior) {
+apply_warrior_acc_towards_enemy :: proc(warrior: ^Warrior, warriors: []Warrior) {
 	//Move towards the closest enemy
 	best_warrior: ^Warrior
 	best_dist: f32 = 999999.0
@@ -35,6 +35,7 @@ apply_warrior_acc_towards_enemy :: proc(warrior: ^Warrior) {
 		if w.color == warrior.color do continue
 		dist := rl.Vector2DistanceSqr(warrior.pos, w.pos)
 		if dist >= best_dist do continue
+		if dist <= WARRIOR_RADIUS * 2.5 do continue
 		best_warrior = &w
 		best_dist = dist
 	}
@@ -42,7 +43,7 @@ apply_warrior_acc_towards_enemy :: proc(warrior: ^Warrior) {
 	warrior.acc += dir * 100
 }
 
-apply_warrior_separation :: proc(warrior: ^Warrior) {
+apply_warrior_collision :: proc(warrior: ^Warrior, warriors: []Warrior) {
 	for &w in warriors {
 		if w == warrior^ do continue
 		if rl.Vector2DistanceSqr(warrior.pos, w.pos) > 2 * 2 * WARRIOR_RADIUS * WARRIOR_RADIUS do continue
@@ -53,10 +54,26 @@ apply_warrior_separation :: proc(warrior: ^Warrior) {
 	}
 }
 
+apply_warrior_cohesion :: proc(warrior: ^Warrior, warriors: []Warrior) {
+	sum : rl.Vector2
+	count : i32
+	for &w in warriors {
+		if w == warrior^ do continue
+		if w.color != warrior.color do continue
+		sum += w.pos - warrior.pos
+		count += 1
+	}
+	if count == 0 do return
+	sum /= f32(count)
+	sum = rl.Vector2Normalize(sum)
+	warrior.acc += sum * 20
+}
 
-apply_warrior_forces :: proc(warrior: ^Warrior) {
-	apply_warrior_acc_towards_enemy(warrior)
-	apply_warrior_separation(warrior)
+
+apply_warrior_forces :: proc(warrior: ^Warrior, warriors: []Warrior) {
+	apply_warrior_acc_towards_enemy(warrior, warriors)
+	apply_warrior_collision(warrior, warriors)
+	apply_warrior_cohesion(warrior, warriors)
 }
 
 update_warrior_position :: proc(warrior: ^Warrior) {
@@ -68,4 +85,5 @@ update_warrior_position :: proc(warrior: ^Warrior) {
 }
 
 move_warriors :: proc() {
+
 }
