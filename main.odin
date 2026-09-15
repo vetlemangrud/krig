@@ -11,15 +11,17 @@ camera := rl.Camera2D {
 	zoom     = 1,
 }
 
+warriors := []Warrior {
+	Warrior{color = rl.RED, health = 100, pos = {-100, -50}},
+	Warrior{color = rl.RED, health = 100, pos = {-100, 50}},
+	Warrior{color = rl.BLUE, health = 100, pos = {100, -50}},
+	Warrior{color = rl.BLUE, health = 100, pos = {100, 50}},
+}
+
 main :: proc() {
 	rl.InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "krig")
 	defer rl.CloseWindow()
 	rl.SetTargetFPS(60)
-	warrior := Warrior {
-		color  = rl.RED,
-		health = 100,
-		pos    = {0, 0},
-	}
 
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
@@ -28,7 +30,9 @@ main :: proc() {
 		{
 			rl.BeginMode2D(camera)
 			defer rl.EndMode2D()
-			drawWarrior(&warrior)
+			for &warrior in warriors {
+				draw_warrior(&warrior)
+			}
 		}
 	}
 }

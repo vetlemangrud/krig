@@ -3,17 +3,18 @@ package main
 import rl "vendor:raylib"
 import "vendor:raylib/rlgl"
 
+// Static properties shared by all warriors
+WARRIOR_ATTACK :: 10
+WARRIOR_RADIUS :: 10
+
+// Dynamic properties that change per warrior
 Warrior :: struct {
 	pos:    rl.Vector2,
 	health: i32,
 	color:  rl.Color,
 }
 
-WARRIOR_HEALTH :: 100
-WARRIOR_ATTACK :: 10
-WARRIOR_RADIUS :: 10
-
-drawWarrior :: proc(warrior: ^Warrior) {
+draw_warrior :: proc(warrior: ^Warrior) {
 	rlgl.PushMatrix()
 	defer rlgl.PopMatrix()
 
