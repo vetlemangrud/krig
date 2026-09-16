@@ -27,7 +27,7 @@ draw_warrior :: proc(warrior: ^Warrior) {
 	rl.DrawCircle(0, 0, WARRIOR_RADIUS, warrior.color)
 }
 
-apply_warrior_acc_towards_enemy :: proc(warrior: ^Warrior, warriors: []Warrior) {
+apply_warrior_vel_towards_enemy :: proc(warrior: ^Warrior, warriors: []Warrior) {
 	//Move towards the closest enemy
 	best_warrior: ^Warrior
 	best_dist: f32 = 999999.0
@@ -70,14 +70,14 @@ apply_warrior_cohesion :: proc(warrior: ^Warrior, warriors: []Warrior) {
 }
 
 
-apply_warrior_forces :: proc(warrior: ^Warrior, warriors: []Warrior) {
-	apply_warrior_acc_towards_enemy(warrior, warriors)
+apply_warrior_velocities :: proc(warrior: ^Warrior, warriors: []Warrior) {
+	apply_warrior_vel_towards_enemy(warrior, warriors)
 	apply_warrior_collision(warrior, warriors)
 	apply_warrior_cohesion(warrior, warriors)
+	warrior.vel = rl.Vector2ClampValue(warrior.vel, 0, WARRIOR_SPEED)
 }
 
 update_warrior_position :: proc(warrior: ^Warrior) {
-	warrior.vel = rl.Vector2ClampValue(warrior.vel, 0, WARRIOR_SPEED)
 	warrior.pos += warrior.vel * rl.GetFrameTime()
 	warrior.vel = {0, 0}
 }
