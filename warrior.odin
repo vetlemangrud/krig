@@ -5,6 +5,8 @@ import "vendor:raylib/rlgl"
 
 // Static properties shared by all warriors
 WARRIOR_ATTACK :: 10
+WARRIOR_ATTACK_COOLDOWN :: 3
+WARRIOR_RANGE :: 10
 WARRIOR_RADIUS :: 5
 WARRIOR_SPEED :: 50
 
@@ -14,6 +16,7 @@ Warrior :: struct {
 	rotation: f32,
 	vel:      rl.Vector2,
 	health:   i32,
+	cooldown: f32,
 	color:    rl.Color,
 }
 
@@ -84,6 +87,10 @@ apply_warrior_velocities :: proc(warrior: ^Warrior, warriors: []Warrior) {
 update_warrior_position :: proc(warrior: ^Warrior) {
 	warrior.pos += warrior.vel * rl.GetFrameTime()
 	warrior.vel = {0, 0}
+}
+
+warrior_attack :: proc(warrior: ^Warrior, warriors: []Warrior) {
+	warrior.cooldown = max(0, warrior.cooldown - rl.GetFrameTime())
 }
 
 move_warriors :: proc(warriors: []Warrior) {
