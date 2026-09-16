@@ -8,8 +8,6 @@ WARRIOR_ATTACK :: 10
 WARRIOR_RADIUS :: 5
 WARRIOR_SPEED :: 50
 
-DRAG :: 1.0
-
 // Dynamic properties that change per warrior
 Warrior :: struct {
 	pos:    rl.Vector2,
