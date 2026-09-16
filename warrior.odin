@@ -10,10 +10,11 @@ WARRIOR_SPEED :: 50
 
 // Dynamic properties that change per warrior
 Warrior :: struct {
-	pos:    rl.Vector2,
-	vel:    rl.Vector2,
-	health: i32,
-	color:  rl.Color,
+	pos:      rl.Vector2,
+	rotation: f32,
+	vel:      rl.Vector2,
+	health:   i32,
+	color:    rl.Color,
 }
 
 // Draw warrior to the screen
@@ -22,7 +23,9 @@ draw_warrior :: proc(warrior: ^Warrior) {
 	defer rlgl.PopMatrix()
 
 	rlgl.Translatef(warrior.pos.x, warrior.pos.y, 0)
+	rlgl.Rotatef(warrior.rotation * rl.RAD2DEG, 0, 0, 1)
 	rl.DrawCircle(0, 0, WARRIOR_RADIUS, warrior.color)
+	rl.DrawLine(0,0,WARRIOR_RADIUS,0,rl.BLACK)
 }
 
 apply_warrior_vel_towards_enemy :: proc(warrior: ^Warrior, warriors: []Warrior) {
@@ -72,8 +75,9 @@ apply_warrior_cohesion :: proc(warrior: ^Warrior, warriors: []Warrior) {
 
 apply_warrior_velocities :: proc(warrior: ^Warrior, warriors: []Warrior) {
 	apply_warrior_vel_towards_enemy(warrior, warriors)
-	apply_warrior_collision(warrior, warriors)
 	apply_warrior_cohesion(warrior, warriors)
+	if warrior.vel != {0, 0} do warrior.rotation = rl.Vector2Angle({1, 0}, warrior.vel)
+	apply_warrior_collision(warrior, warriors)
 	warrior.vel = rl.Vector2ClampValue(warrior.vel, 0, WARRIOR_SPEED)
 }
 
