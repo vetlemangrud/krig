@@ -13,7 +13,7 @@ DRAG :: 1.0
 // Dynamic properties that change per warrior
 Warrior :: struct {
 	pos:    rl.Vector2,
-	vel: rl.Vector2,
+	vel:    rl.Vector2,
 	health: i32,
 	color:  rl.Color,
 }
@@ -55,8 +55,8 @@ apply_warrior_collision :: proc(warrior: ^Warrior, warriors: []Warrior) {
 }
 
 apply_warrior_cohesion :: proc(warrior: ^Warrior, warriors: []Warrior) {
-	sum : rl.Vector2
-	count : i32
+	sum: rl.Vector2
+	count: i32
 	for &w in warriors {
 		if w == warrior^ do continue
 		if w.color != warrior.color do continue
@@ -82,6 +82,17 @@ update_warrior_position :: proc(warrior: ^Warrior) {
 	warrior.vel = {0, 0}
 }
 
-move_warriors :: proc() {
+move_warriors :: proc(warriors: []Warrior) {
+	for &warrior in warriors {
+		apply_warrior_velocities(&warrior, warriors[:])
+	}
+	for &warrior in warriors {
+		update_warrior_position(&warrior)
+	}
+}
 
+draw_warriors :: proc(warriors: []Warrior) {
+	for &warrior in warriors {
+		draw_warrior(&warrior)
+	}
 }
