@@ -21,7 +21,7 @@ main :: proc() {
 			Warrior {
 				pos = {f32(rl.GetRandomValue(-200, -50)), f32(rl.GetRandomValue(-100, 100))},
 				health = 100,
-				color = rl.RED,
+				color = TEAM_1_COLOR,
 			},
 		)
 		append(
@@ -29,7 +29,7 @@ main :: proc() {
 			Warrior {
 				pos = {f32(rl.GetRandomValue(50, 200)), f32(rl.GetRandomValue(-100, 100))},
 				health = 100,
-				color = rl.BLUE,
+				color = TEAM_2_COLOR,
 			},
 		)
 	}
@@ -41,7 +41,7 @@ main :: proc() {
 		move_warriors(warriors[:])
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
-		rl.ClearBackground(rl.GRAY)
+		rl.ClearBackground(BACKGROUND_COLOR)
 		{
 			rl.BeginMode2D(camera)
 			defer rl.EndMode2D()
