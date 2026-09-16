@@ -11,10 +11,11 @@ camera := rl.Camera2D {
 	zoom     = 1,
 }
 
-WARRIORS_PER_TEAM := 20
+WARRIORS_PER_TEAM :: 20
 
 main :: proc() {
 	warriors := make([dynamic]Warrior)
+	defer delete(warriors)
 	for _ in 0 ..< WARRIORS_PER_TEAM {
 		append(
 			&warriors,

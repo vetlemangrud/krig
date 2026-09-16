@@ -39,14 +39,16 @@ apply_warrior_vel_towards_enemy :: proc(warrior: ^Warrior, warriors: []Warrior) 
 		best_warrior = &w
 		best_dist = dist
 	}
+	if best_warrior == nil do return
 	dir := rl.Vector2Normalize(best_warrior.pos - warrior.pos)
 	warrior.vel += dir * 100
 }
 
 apply_warrior_collision :: proc(warrior: ^Warrior, warriors: []Warrior) {
 	for &w in warriors {
-		if w == warrior^ do continue
-		if rl.Vector2DistanceSqr(warrior.pos, w.pos) > 2 * 2 * WARRIOR_RADIUS * WARRIOR_RADIUS do continue
+		if &w == warrior do continue
+		sq_dist := rl.Vector2DistanceSqr(warrior.pos, w.pos)
+		if sq_dist > 2 * 2 * WARRIOR_RADIUS * WARRIOR_RADIUS || sq_dist == 0 do continue
 		dist := rl.Vector2Distance(warrior.pos, w.pos)
 		dir := (warrior.pos - w.pos) / dist
 		overlap := (2 * WARRIOR_RADIUS - dist)
@@ -58,7 +60,7 @@ apply_warrior_cohesion :: proc(warrior: ^Warrior, warriors: []Warrior) {
 	sum: rl.Vector2
 	count: i32
 	for &w in warriors {
-		if w == warrior^ do continue
+		if &w == warrior do continue
 		if w.color != warrior.color do continue
 		sum += w.pos - warrior.pos
 		count += 1
