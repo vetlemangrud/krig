@@ -6,14 +6,14 @@ import "vendor:raylib/rlgl"
 // Static properties shared by all warriors
 WARRIOR_ATTACK :: 10
 WARRIOR_RADIUS :: 5
+WARRIOR_SPEED :: 50
 
 DRAG :: 1.0
 
 // Dynamic properties that change per warrior
 Warrior :: struct {
 	pos:    rl.Vector2,
-	vel:    rl.Vector2,
-	acc:    rl.Vector2,
+	vel: rl.Vector2,
 	health: i32,
 	color:  rl.Color,
 }
@@ -40,7 +40,7 @@ apply_warrior_acc_towards_enemy :: proc(warrior: ^Warrior, warriors: []Warrior) 
 		best_dist = dist
 	}
 	dir := rl.Vector2Normalize(best_warrior.pos - warrior.pos)
-	warrior.acc += dir * 100
+	warrior.vel += dir * 100
 }
 
 apply_warrior_collision :: proc(warrior: ^Warrior, warriors: []Warrior) {
@@ -50,7 +50,7 @@ apply_warrior_collision :: proc(warrior: ^Warrior, warriors: []Warrior) {
 		dist := rl.Vector2Distance(warrior.pos, w.pos)
 		dir := (warrior.pos - w.pos) / dist
 		overlap := (2 * WARRIOR_RADIUS - dist)
-		warrior.acc += dir * overlap * overlap * 1000
+		warrior.vel += dir * overlap * overlap * 1000
 	}
 }
 
@@ -66,7 +66,7 @@ apply_warrior_cohesion :: proc(warrior: ^Warrior, warriors: []Warrior) {
 	if count == 0 do return
 	sum /= f32(count)
 	sum = rl.Vector2Normalize(sum)
-	warrior.acc += sum * 20
+	warrior.vel += sum * 20
 }
 
 
@@ -77,11 +77,9 @@ apply_warrior_forces :: proc(warrior: ^Warrior, warriors: []Warrior) {
 }
 
 update_warrior_position :: proc(warrior: ^Warrior) {
-	warrior.vel += warrior.acc * rl.GetFrameTime()
-	warrior.vel *= (1-DRAG*rl.GetFrameTime())
-	warrior.vel = rl.Vector2ClampValue(warrior.vel, 0, 200)
+	warrior.vel = rl.Vector2ClampValue(warrior.vel, 0, WARRIOR_SPEED)
 	warrior.pos += warrior.vel * rl.GetFrameTime()
-	warrior.acc = {0, 0}
+	warrior.vel = {0, 0}
 }
 
 move_warriors :: proc() {
