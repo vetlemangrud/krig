@@ -1,11 +1,12 @@
 package main
 
+import "core:math"
 import rl "vendor:raylib"
 import "vendor:raylib/rlgl"
 
 // Static properties shared by all warriors
 WARRIOR_ATTACK :: 10
-WARRIOR_ATTACK_COOLDOWN :: 3
+WARRIOR_ATTACK_COOLDOWN :: 2
 WARRIOR_RANGE :: 10
 WARRIOR_RADIUS :: 5
 WARRIOR_SPEED :: 50
@@ -28,13 +29,24 @@ draw_warrior :: proc(warrior: ^Warrior) {
 	rlgl.Translatef(warrior.pos.x, warrior.pos.y, 0)
 	rlgl.Rotatef(warrior.rotation * rl.RAD2DEG, 0, 0, 1)
 	rl.DrawCircle(0, 0, WARRIOR_RADIUS, warrior.color)
-	rl.DrawLine(0,0,WARRIOR_RADIUS,0,rl.BLACK)
+	rl.DrawLine(
+		0,
+		0,
+		i32(
+			WARRIOR_RADIUS *
+			(WARRIOR_ATTACK_COOLDOWN - warrior.cooldown) /
+			WARRIOR_ATTACK_COOLDOWN,
+		),
+		0,
+		rl.BLACK,
+	)
 }
 
-apply_warrior_vel_towards_enemy :: proc(warrior: ^Warrior, warriors: []Warrior) {
+closest_enemy_warrior :: proc(warrior: ^Warrior, warriors: []Warrior) -> ^Warrior {
+
 	//Move towards the closest enemy
 	best_warrior: ^Warrior
-	best_dist: f32 = 999999.0
+	best_dist: f32 = math.F32_MAX
 	for &w in warriors {
 		if w.color == warrior.color do continue
 		dist := rl.Vector2DistanceSqr(warrior.pos, w.pos)
@@ -43,8 +55,14 @@ apply_warrior_vel_towards_enemy :: proc(warrior: ^Warrior, warriors: []Warrior) 
 		best_warrior = &w
 		best_dist = dist
 	}
-	if best_warrior == nil do return
-	dir := rl.Vector2Normalize(best_warrior.pos - warrior.pos)
+	if best_warrior == nil do return nil
+	return best_warrior
+}
+
+apply_warrior_vel_towards_enemy :: proc(warrior: ^Warrior, warriors: []Warrior) {
+	closest_warrior := closest_enemy_warrior(warrior, warriors)
+	if closest_warrior == nil do return
+	dir := rl.Vector2Normalize(closest_warrior.pos - warrior.pos)
 	warrior.vel += dir * 100
 }
 
@@ -91,7 +109,16 @@ update_warrior_position :: proc(warrior: ^Warrior) {
 
 warrior_attack :: proc(warrior: ^Warrior, warriors: []Warrior) {
 	warrior.cooldown = max(0, warrior.cooldown - rl.GetFrameTime())
+	if warrior.cooldown > 0 do return
+	closest_warrior := closest_enemy_warrior(warrior, warriors)
+	if closest_warrior == nil do return
+	dist := rl.Vector2Distance(warrior.pos, closest_warrior.pos)
+	if dist > WARRIOR_RANGE do return
+	closest_warrior.health -= WARRIOR_ATTACK
+	warrior.cooldown = WARRIOR_ATTACK_COOLDOWN
+
 }
+
 
 move_warriors :: proc(warriors: []Warrior) {
 	for &warrior in warriors {
@@ -99,6 +126,12 @@ move_warriors :: proc(warriors: []Warrior) {
 	}
 	for &warrior in warriors {
 		update_warrior_position(&warrior)
+	}
+}
+
+warriors_attack :: proc(warriors: []Warrior) {
+	for &warrior in warriors {
+		warrior_attack(&warrior, warriors[:])
 	}
 }
 

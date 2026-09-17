@@ -13,6 +13,12 @@ camera := rl.Camera2D {
 
 WARRIORS_PER_TEAM :: 20
 
+remove_dead_warriors :: proc(warriors: ^[dynamic]Warrior) {
+	for i := len(warriors) - 1; i >= 0; i -= 1 {
+		if warriors[i].health <= 0 do unordered_remove(warriors, i)
+	}
+}
+
 main :: proc() {
 	warriors := make([dynamic]Warrior)
 	defer delete(warriors)
@@ -40,6 +46,8 @@ main :: proc() {
 
 	for !rl.WindowShouldClose() {
 		move_warriors(warriors[:])
+		warriors_attack(warriors[:])
+		remove_dead_warriors(&warriors)
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
 		rl.ClearBackground(BACKGROUND_COLOR)
